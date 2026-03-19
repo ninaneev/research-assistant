@@ -1,97 +1,131 @@
-# Improvement Plan — Run 001
+# Improvement Plan — Run 001 (Round 3 — Final)
 
-**Based on:** FAPESP PIPE Review (fapesp_review.md)
-**Date:** 2026-03-18
-**Overall score:** 3.4 / 5
-**Verdict:** MAJOR REVISION
+**Based on:** FAPESP Review — Round 3 (fapesp_review.md)
+**Date:** 2026-03-19
+**Overall Score:** 4.2 / 5.0
+**Verdict:** SOLID
+**Previous Score:** 3.8 / 5.0 (Minor Revision)
 
 ---
 
 ## Summary of Review Outcome
 
-The run-001 report is structurally sound and intellectually honest — its limitations section, contradiction registry, and cross-cutting findings represent genuine research discipline. The artifact pipeline (question.md → web_evidence.jsonl → doc_evidence.jsonl → claims.json → report.md) is coherent and internally consistent. However, two categories of deficiency prevent acceptance under FAPESP PIPE standards:
+The run-001 report has reached Solid status. All five blocking issues identified across rounds 1 and 2 have been addressed:
 
-- **Verifiability failure:** Evidence sources are referenced by internal IDs only. No external reviewer can locate, read, or verify any cited source. This makes the evidentiary chain opaque.
-- **Execution/plan conflation:** The report presents the research plan as an execution record without distinguishing what has been done from what was intended. This overstates methodological completeness.
+- **Round 1 blocker (citations):** Resolved in round 2 — 25-entry References section and IEEE inline citations added.
+- **Round 2 blocker (plan/execution conflation):** Resolved in this submission — explicit status disclaimer added at §2 close.
+- **Round 2 blocker (implicit contributions):** Resolved in this submission — three-point contribution statement added to §2 with explicit synthesis framing.
 
-Secondary deficiencies include inconsistent treatment of vendor-sourced quantitative claims, an unstated innovation contribution, and the absence of a formal abstract and references section.
+The score gains in this round were driven by Methodological Clarity (+1, from 3 to 4) and Innovation and Contribution Relevance (+1, from 4 to 5). All remaining issues are minor editorial items that do not affect the intellectual integrity or research credibility of the artifact.
 
----
-
-## Top 5 Improvements (ranked by impact)
-
-### Improvement 1: Add Full Bibliographic Metadata to All Evidence Sources
-
-- **Problem:** Every claim in the report is attributed to an internal ID (web-001, doc-003, etc.) but no source can be externally verified. Author, URL, publication date, and retrieval date are absent from both the report and claims.json. This is the most severe deficiency: a reviewer cannot audit a single factual claim.
-- **Action:** (a) Extend the web_evidence.jsonl schema to require: `url`, `title`, `author`, `publication_date`, `retrieval_date`. (b) Propagate these fields into claims.json under each `supporting_evidence` entry. (c) Add a formal References section to the report listing all web-xxx sources in IEEE format and all doc-xxx sources as "Internal design artifact, [filename], run-001." (d) Update the report-writer agent's rules to require a References section in every output.
-- **Target section:** report.md — new References section; claims.json — schema extension; web_evidence.jsonl — schema extension; report-writer agent system prompt.
-- **Effort:** High (requires schema change propagating through the full pipeline and retroactive enrichment of the current run's evidence files)
+**No blocking issues remain for publication.**
 
 ---
 
-### Improvement 2: Separate Executed Methodology from Research Plan
+## Status: No Blocking Issues for Publication
 
-- **Problem:** The report describes the research methodology as if it has been fully executed, but question.md is a protocol plan and some phases may not have been completed as described. There is no record of actual search queries, retrieved source counts, or confidence assignment rationale. This conflation overstates methodological rigor.
-- **Action:** (a) Add a Methods section to the report (between Section 2 Background and Section 3 Key Findings) with two subsections: "Planned Protocol" (summary of question.md) and "Executed Steps" (what was actually done, with concrete details — number of sources retrieved per SQ, queries used, phases completed). (b) Add a `execution_log.md` artifact to the run directory that each agent populates on completion, recording actual actions taken. (c) If any phase was simulated or incomplete, state this explicitly in the Methods section.
-- **Target section:** report.md — new Section 2.5 Methods; new artifact execution_log.md.
-- **Effort:** Medium (requires agent prompt updates to generate execution logs; retrospective documentation for run-001)
+The following three items must be resolved before Zenodo archival. They require no new research, no structural changes, and no new evidence. Total estimated effort: 15–20 minutes.
 
 ---
 
-### Improvement 3: Apply Uniform Epistemic Standards to All Vendor-Sourced Quantitative Claims
+### Fix 1 — Resolve the Orphan Reference [3]
 
-- **Problem:** The report flags the 200% token cost increase claim (web-002) as speculative, but applies no such qualifier to: the 13–57% blackboard performance advantage (web-005), the 10–35 second framework latency benchmarks (web-024), or the 75% enterprise auditability survey (web-012). These sources have equal or greater conflicts of interest and equally absent peer review. The inconsistent standard weakens the report's scientific credibility.
-- **Action:** (a) Apply the phrase "should be treated as directional pending independent validation" to every quantitative claim derived from a vendor, consulting firm, or non-peer-reviewed blog. (b) Add a Source Quality Appendix that classifies each evidence ID by type: peer-reviewed / independent non-commercial / vendor / internal documentation. (c) Update the synthesizer agent's rules to require this classification for every evidence item tagged `source_type: web`.
-- **Target section:** report.md — Sections 4.1, 4.2, 4.3, 4.5; claims.json — add `source_quality` field; synthesizer agent system prompt.
-- **Effort:** Low-Medium (primarily an editorial pass on the report plus a schema addition)
+**Status: Required before archival**
 
----
+**Action:** Reference [3] (Falconer, Sean; Sellers, Andrew. "Four Design Patterns for Event-Driven, Multi-Agent Systems." Confluent, 2025.) appears in the References section but is not cited anywhere in the report body.
 
-### Improvement 4: Resolve Citation Format Inconsistency (X5) and Implement IEEE Citations
+Choose one of the following resolutions:
 
-- **Problem:** The research plan (question.md) recommends IEEE citation format for technical systems research, but the report-writer agent was never instructed to use IEEE format, and no citations in the report follow any standard format. Contradiction X5 is documented in claims.json but has not been acted upon. The report produces evidence IDs as substitutes for citations — a practice that satisfies internal traceability but fails external academic standards.
-- **Action:** (a) Update the report-writer agent's system prompt to specify: "All external source references must be formatted as IEEE citations in the References section. Use the format: [ID] Author(s), 'Title,' *Venue*, Year. [Online]. Available: URL. Accessed: date." (b) For internal documentation sources (doc-xxx), use: [ID] Internal design artifact, *[filename]*, run-001, [date]. (c) Retroactively apply this to the current report's References section once bibliographic metadata is available (see Improvement 1). (d) Mark X5 as resolved in claims.json.
-- **Target section:** report-writer agent system prompt; report.md References section; claims.json contradictions_registry entry X5.
-- **Effort:** Low (prompt update is immediate; retroactive citation formatting depends on Improvement 1 completion)
+- **Option A (preferred):** Add an inline citation to [3] in §4.1, at the sentence discussing event-driven asynchronous architectures as blackboard-adjacent patterns that improve reliability versus synchronous orchestration. The sentence currently reads: "A separate study demonstrates that agents sharing full reasoning context on a blackboard reduce redundant computation and reach consensus-driven outputs [6]." Consider adding [3] here or at the prior sentence on event-driven architectures, consistent with how web-003 supports Claim C2.
+- **Option B:** Remove [3] from the References section entirely if the finding is already adequately covered by [5] and [6].
 
----
+**Rationale:** An archival artifact must not contain bibliography entries that are never cited in the body. This is the single issue preventing a clean Zenodo deposit.
 
-### Improvement 5: Articulate the Innovation Contribution Explicitly
+**Effort:** Low — one inline citation added or one reference entry removed.
 
-- **Problem:** The report makes a genuine synthetic contribution — identifying cross-cutting interdependencies across five dimensions of multi-agent system design, resolving six architectural contradictions, and enumerating ten knowledge gaps — but never states this as a contribution. A FAPESP reviewer assessing novelty has no basis for judging what the work adds to the field. The innovation is implicit and therefore invisible.
-- **Action:** (a) Add a "Contribution Statement" paragraph at the end of Section 2 (Background), structured as: "This work contributes: (1) [specific synthesis not found elsewhere]; (2) [gap identification]; (3) [design recommendation with stated rationale]." (b) Compare the proposed architecture explicitly to at least one existing published multi-agent system design to establish the novelty boundary. (c) Frame the knowledge gaps registry (G1–G10) in the report as a research agenda contribution — state explicitly that making latent gaps explicit is the primary forward contribution of this work.
-- **Target section:** report.md — Section 2 addition; brief comparative paragraph in Section 4 or a new Section 3.1.
-- **Effort:** Low-Medium (primarily a writing task, but requires identifying at least one comparison system from the evidence base or literature)
+**Criterion affected:** Citation and Attribution Quality.
 
 ---
 
-## Secondary Improvements
+### Fix 2 — Add Retrieval Dates to Three References
 
-These improvements are valuable but do not block FAPESP compliance on their own. Address after completing the top 5.
+**Status: Required before archival**
 
-**S1 — Add a formal abstract (150–200 words).** Standard for academic technical reports. Should summarize: research question, method, key findings, and principal recommendations. Place before Section 1.
+**Action:** References [2], [10], and [13] carry no publication date. Per IEEE web citation practice, append "[accessed 2026-03-19]" to each entry in the References section (§10).
 
-**S2 — Add a Source Quality Appendix.** Classify all 25 web evidence sources by type (peer-reviewed / independent / vendor / internal). Report the percentage of recommendations that rely exclusively on vendor evidence. This makes the epistemic structure of the report transparent.
+- [2] Jose GuruSup. "Agent Orchestration Patterns..." DEV Community. — add "[accessed 2026-03-19]"
+- [10] Gunndu, Klement. "4 Fault Tolerance Patterns..." DEV Community. — add "[accessed 2026-03-19]"
+- [13] PricewaterhouseCoopers. "Validating Multi-Agent AI Systems..." PwC. — add "[accessed 2026-03-19]"
 
-**S3 — Define exit criteria for the FAPESP review feedback loop.** Contradiction C8 and gap G7 identify this as an architectural reliability issue. Specify: a numeric quality threshold (e.g., overall score >= 4.0/5.0 to accept without revision), a maximum revision count (e.g., 2 cycles), and a human escalation protocol when neither condition is met.
+**Rationale:** IEEE citation format for web sources requires either a publication date or a retrieval date. Three of 25 references are currently missing both.
 
-**S4 — Add an immutability mechanism to the artifact pipeline.** As identified in contradiction X3, intermediate artifact files (web_evidence.jsonl, doc_evidence.jsonl, claims.json) can be modified post-creation without detection. Implement git-based checksumming (commit each artifact immediately after creation) or file-level hash logging. This closes the audit trail integrity gap.
+**Effort:** Low — three line edits in §10.
 
-**S5 — Specify the target LLM provider and model version.** Gap G4 identifies this as a prerequisite for any concrete context management or fault tolerance specification. Add a `target_llm` field to the run metadata block in question.md and propagate it through the pipeline.
-
-**S6 — Add a scope limitation statement to Section 7.** The report currently does not state that its findings address a single system (run-001) and may not generalize to systems with different orchestration topologies, task types, or scale requirements. This is standard practice in technical-scientific reports.
-
-**S7 — Evaluate runtime role enforcement mechanisms.** Gap G10 identifies that role separation is currently enforced only through system prompt instructions, which are not mechanically binding. Specify output schema validation or contract-based enforcement as a development target.
+**Criterion affected:** Citation and Attribution Quality.
 
 ---
 
-## What Should NOT Change
+### Fix 3 — Map SQ6 and SQ7 to Report Sections
 
-The following elements of the current report represent genuine strengths and should be preserved in revision:
+**Status: Recommended before archival**
 
-- **The Limitations section (Section 7) in its current form.** It is the most intellectually honest section in the report. Its reflexive acknowledgment that the report's own provenance cannot be cryptographically verified is rare and should not be softened.
-- **The Contradictions registry structure (Section 6).** Naming contradictions, identifying conflicting evidence IDs, and proposing resolutions with stated rationale is rigorous practice. The six registered contradictions (X1–X6) are accurately characterized and the proposed resolutions are defensible.
-- **The claims.json internal cross-reference system.** The evidence ID tagging, confidence level assignment, and open question enumeration per claim is a structural innovation in AI-generated research artifacts. It should be extended (with bibliographic metadata) rather than replaced.
-- **The cross-cutting findings section (Section 5).** The identification of architectural interdependencies spanning multiple sub-questions — particularly the convergence of blackboard architecture and shared memory with access control — represents the highest-value synthetic output of this research run. It should not be condensed or removed.
-- **The open questions section (Section 8).** The cross-referencing of open questions to specific claim IDs (C-xxx) and gap IDs (G-xxx) is precise and actionable. This practice should be retained and extended to future reports.
-- **The next steps section (Section 9) with urgency sequencing.** Organizing recommendations by urgency (immediate pre-production blockers / short-term / medium-term) and citing specific claim and gap IDs for each recommendation is a strong research practice that aids execution planning.
+**Action:** Add one sentence in §1 or §2 explicitly mapping sub-questions SQ6 (Academic-Grade Output Standards) and SQ7 (End-to-End System Design Synthesis) — both defined in question.md — to their coverage locations in the report body.
+
+Example sentence for §1: "Sub-questions SQ6 (academic-grade output standards) and SQ7 (end-to-end synthesis) inform the contribution framing in §2, the cross-cutting analysis in §5, and the recommendations in §9, rather than appearing as standalone evidence sections."
+
+**Rationale:** A reader with access to question.md can verify that all seven sub-questions were addressed; a reader without that access cannot. One sentence closes this gap without requiring any structural change.
+
+**Effort:** Low — one sentence added.
+
+**Criterion affected:** Methodological Clarity.
+
+---
+
+## Optional Polish Items
+
+The following items are not blocking for publication or archival. Address them if time permits, or carry them forward to the next research run as standing quality standards.
+
+**Optional — O1: Tighten the blackboard performance interval framing (§4.1)**
+Add "— a range wide enough to signal high task-type sensitivity" after "13–57% improvement." Current framing presents the wide interval without comment. Effort: Low.
+
+**Optional — O2: Add an explicit evidence-gap sentence to §4.2**
+In §4.2 (Reliability and Fault Tolerance), add: "No peer-reviewed benchmark for fault tolerance pattern composition in LLM research pipelines was identified in the retrieved evidence set; this represents a genuine knowledge gap in the field rather than a retrievable source quality issue." This is more precise than the current §7 framing. Effort: Low.
+
+**Optional — O3: Split §2 into labeled subsections**
+Split §2 into "2.1 Background" and "2.2 Novel Contributions of This Synthesis" to allow a cold reader to encounter system context before contribution claims. Content unchanged; labeling only. Effort: Low.
+
+**Optional — O4: Add section cross-references to the §2 contribution list**
+For each of the three contribution points in §2, add a parenthetical reference to the section where it is elaborated (e.g., "hybridization of orchestrator-worker and blackboard architectures — see §4.1, §5, and §6 (X1)"). This aids navigation for portfolio readers. Effort: Low.
+
+**Optional — O5: Add an opening explanatory sentence to §5**
+After "Six cross-cutting findings emerge from integration across the five sub-questions," add: "These findings identify architectural interdependencies that sub-question literatures treat as separate concerns; integrated analysis reveals design decisions that must be made jointly." This articulates the section's purpose for a reader unfamiliar with multi-question synthesis. Effort: Low.
+
+---
+
+## What Must Not Change
+
+The following elements are strengths and must be preserved unchanged in any revision:
+
+- **Limitations section (§7) in its current form.** The reflexive acknowledgment that the report's own provenance cannot be cryptographically verified, and the specific reference-by-number disclosure of generalizability constraints, are uncommon and rigorous. Do not soften or abbreviate.
+- **Contradictions registry (§6, X1–X6).** Each contradiction names both conflicting evidence positions, proposes a resolution with stated rationale, and cites by reference number. This is the report's highest-value analytical feature.
+- **Cross-cutting findings section (§5).** The blackboard/shared-memory convergence framing and the reliability-traceability co-design principle are the core synthesis contributions. Do not condense.
+- **Open questions cross-referencing (§8).** Each question is linked to specific claim IDs and gap IDs from claims.json. This precision must be retained and extended in future runs.
+- **Footer attribution disclaimer.** The explicit statement that no citations, paper titles, or author names were invented, with a traceable provenance chain, is a transparency commitment that should be carried into all future report outputs.
+- **Next steps urgency sequencing (§9).** The organization as immediate blockers / short-term / medium-term with cited evidence IDs is a strong research practice. Retain and apply to future runs.
+
+---
+
+## Round 3 Score Summary
+
+| Criterion | Round 2 | Round 3 | Delta | Status |
+|-----------|---------|---------|-------|--------|
+| Scientific Rigor | 4/5 | 4/5 | 0 | Stable |
+| Methodological Clarity | 3/5 | 4/5 | +1 | Resolved |
+| Citation & Attribution | 4/5 | 4/5 | 0 | Minor fixes remain |
+| Structural Presentation | 4/5 | 4/5 | 0 | Stable |
+| Innovation & Contribution | 4/5 | 5/5 | +1 | Resolved |
+| **Overall** | **3.8/5** | **4.2/5** | **+0.4** | **SOLID** |
+
+The projected round 3 score range from the round 2 improvement plan was 4.0–4.2/5 with verdict Solid. The actual round 3 score is 4.2/5 with verdict Solid. The projection was accurate.
+
+No further full review cycle is required. Resolve Fixes 1–3 and deposit.

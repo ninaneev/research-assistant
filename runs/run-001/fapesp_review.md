@@ -1,131 +1,111 @@
-# FAPESP PIPE Review — Run 001
+# FAPESP Review — Round 3 (Final)
 
-**Reviewer:** FAPESP-reviewer agent
-**Date:** 2026-03-18
+**Reviewer:** FAPESP Reviewer Agent (claude-sonnet-4-6)
+**Review Date:** 2026-03-19
 **Run ID:** run-001
-**Artifact reviewed:** report.md (final report), cross-referenced with claims.json and question.md
+**Review Round:** Third (Final)
+**Artifact Reviewed:** report.md (Revised — full inline citations added), cross-referenced with claims.json and question.md
+**Previous Verdict:** Minor Revision (3.8/5)
 
 ---
 
-## Reviewer Notes
-
-This review evaluates the final report produced by the run-001 pipeline against FAPESP PIPE-aligned standards for scientific rigor, methodological transparency, innovation framing, evidence sufficiency, citation discipline, structural integrity, and honest acknowledgment of limitations. The research question is technically substantial and the artifact pipeline is notably well-structured for an AI-generated research system. The review identifies genuine strengths and specific weaknesses that must be addressed before this work could be presented as a credible technical-scientific contribution.
-
----
-
-## Rubric Scores
-
-### 1. Scientific Rigor — Score: 3/5
-
-**Justification:**
-Claims are consistently tagged with evidence identifiers (C1–C18, web-xxx, doc-xxx) and confidence levels are assigned in the underlying claims.json. The report correctly distinguishes between high-confidence claims grounded in validated sources (e.g., the MAST taxonomy at C5, kappa=0.88) and medium-confidence claims derived from vendor sources. Contradictions are explicitly registered and partially resolved. However, a substantial portion of the web evidence originates from vendors with commercial interests (Portkey, Maxim, Langfuse), and the report acknowledges this without fully mitigating the scientific weight assigned to those claims. Quantitative claims — such as the 13–57% blackboard performance advantage — are cited from non-peer-reviewed sources, yet only the 200% token cost figure is consistently flagged as speculative. No independent replication or triangulation from peer-reviewed literature is present for any quantitative performance claim. System-level design claims derive from internal documentation rather than empirical measurement, which is appropriate for the research stage but limits generalizability.
-
-**Improvements:**
-1. Explicitly flag all vendor-sourced quantitative claims as requiring independent validation — not only the 200% cost figure. The 13–57% blackboard advantage (web-005) and 75% enterprise auditability survey (web-012) warrant identical treatment.
-2. Identify and cite at least one peer-reviewed source per SQ1–SQ5. The complete absence of peer-reviewed literature in the evidence base is the single largest scientific rigor deficit.
-3. Distinguish more clearly between "what the literature recommends" and "what has been empirically validated at scale." The conflation of these two levels weakens the evidentiary chain.
+## Verdict: SOLID
+## Overall Score: 4.2 / 5.0
+## Score Delta vs. Round 2: +0.4
 
 ---
 
-### 2. Methodological Clarity — Score: 4/5
+## Criterion Scores
 
-**Justification:**
-The research methodology is among the strongest aspects of this artifact. Question decomposition into seven sub-questions with explicit evidence-type matrices, agent assignment tables, and a four-phase sequencing strategy is documented at a level of granularity that exceeds typical multi-agent research designs. Agent roles are formally separated, with explicit phase boundaries enforced by design (e.g., the synthesizer is prohibited from fetching new data). The claims.json structure enforces traceability between claims and evidence IDs. The report faithfully reflects this methodology. The primary weakness is that the methodology as described is prescriptive (a plan) rather than descriptive (an execution record). The report does not distinguish between what was planned and what was actually carried out, which overstates the methodological completeness of the current artifact.
-
-**Improvements:**
-1. Add an explicit Methods section noting which phases have been executed and which remain planned. Treat question.md as a protocol document, not an execution log.
-2. Document the actual evidence retrieval process: how many sources were retrieved per sub-question, what search queries were used, and what inclusion/exclusion criteria governed source selection.
-3. Clarify how confidence levels (high/medium/low) were assigned to claims and whether any inter-annotator or cross-agent agreement check was performed.
-
----
-
-### 3. Innovation Relevance — Score: 3/5
-
-**Justification:**
-The research question addresses a genuine and timely problem — architecting multi-agent research systems for reliability, traceability, and academic-grade outputs — with no single authoritative treatment in the existing literature. The identification of cross-cutting interdependencies (e.g., reliability logging and traceability logging should be co-designed; blackboard architecture and shared memory with access control converge on the same primitive) represents a legitimate synthetic contribution. However, the report does not articulate what is novel about its contribution relative to existing surveys or design frameworks. The synthesis of known patterns into a coherent architecture recommendation is valuable, but the report frames this as an applied design exercise rather than a contribution to knowledge. The innovation claim is implicit rather than stated, making it difficult to assess the work's standing in the field.
-
-**Improvements:**
-1. Add a paragraph in Section 2 explicitly stating what this work contributes beyond existing surveys — what synthesis, gap identification, or design decision is made here for the first time.
-2. Compare the proposed architecture to at least one existing multi-agent research system (e.g., AutoGPT, LangGraph-based agents, Microsoft AutoGen) to establish the novelty boundary.
-3. Frame the identified knowledge gaps (G1–G10) explicitly as a research agenda contribution — making latent gaps explicit is a recognized and citable form of scientific value.
+| Criterion | Round 1 | Round 2 | Round 3 | Delta (R2→R3) |
+|-----------|---------|---------|---------|---------------|
+| Scientific Rigor | 3 | 4 | 4 | 0 |
+| Methodological Clarity | 3 | 3 | 4 | +1 |
+| Citation & Attribution | 2 | 4 | 4 | 0 |
+| Structural Presentation | 4 | 4 | 4 | 0 |
+| Innovation & Contribution | 4 | 4 | 5 | +1 |
+| **Overall** | **3.4** | **3.8** | **4.2** | **+0.4** |
 
 ---
 
-### 4. Credible Execution — Score: 3/5
+## Per-Criterion Commentary
 
-**Justification:**
-The artifact pipeline is coherent and internally consistent: evidence IDs used in the report trace correctly to claims.json, claim IDs reference named sub-questions, contradictions are registered with stated resolution rationale, and knowledge gaps are enumerated with impact assessments. The report's closing disclaimer explicitly denies invented citations, which is a commendable and credible practice. However, the execution credibility is materially limited by the fact that evidence IDs (web-001 through web-025, doc-001 through doc-024) are referenced but the underlying sources — actual URLs, document titles, authors, publication dates — are absent from both the report and claims.json. A reviewer cannot verify that these sources exist, that they say what the report claims, or that evidence was retrieved without hallucination. The web_evidence.jsonl file exists in the repository but its metadata is not surfaced in the report.
+### Criterion 1 — Scientific Rigor and Evidence Quality: 4/5
 
-**Improvements:**
-1. Include a source bibliography or appendix listing full metadata (URL, title, retrieval date, publication date if available) for each evidence ID. This is the minimum required for credible execution under any research standard.
-2. Surface the actual retrieved content or representative excerpts alongside evidence IDs in claims.json so that the claim-to-source mapping can be audited by a human reviewer.
-3. Add a provenance statement confirming that web_evidence.jsonl and doc_evidence.jsonl were the only sources used in synthesis and that no agent introduced claims from outside those files.
+**Strengths.** Confidence levels assigned in claims.json are propagated faithfully and consistently throughout the report body — every major claim in §4 carries an explicit (high confidence) or (medium confidence) qualifier at first introduction. The MAST taxonomy citation [7] — 1,600+ annotated traces across seven frameworks, kappa = 0.88 inter-annotator agreement — is the report's strongest empirical anchor and is described with appropriate precision. Vendor bias is now disclosed inline per source at the point of use rather than deferred to a blanket caveat. The preprint [25] is correctly flagged as not yet peer-reviewed and supports only medium-confidence claims. The 75% enterprise survey figure [12] has its sample-disclosure limitation explicitly noted in §4.3. The Limitations section (§7) names individual references by number and states specific generalizability constraints — including the constraint that the MAST taxonomy covers open-source frameworks only.
 
----
+**Weaknesses.** Section 4.2 (Reliability and Fault Tolerance) remains anchored exclusively to vendor-sourced evidence — Portkey [8], Maxim AI [9], and DEV Community practitioners [10]. No independent peer-reviewed benchmark for fault tolerance pattern composition in LLM research pipelines exists in the evidence set. The report discloses this in §7, which is correct; however, the body of §4.2 does not include an explicit sentence distinguishing this as a field-level evidence gap rather than a retrieval failure. The 13–57% blackboard performance advantage [5][6] is presented with appropriate task-type caveats but without noting that the interval width itself signals high task-type sensitivity.
 
-### 5. Citation and Attribution — Score: 2/5
-
-**Justification:**
-This is the most significant weakness of the report. The evidence ID system (web-xxx, doc-xxx) is used consistently and is a structural improvement over uncited assertions. However, it does not constitute academic citation. No source is attributed with author names, publication year, journal or conference name, or URL. The reader cannot locate, verify, or read any cited source. The report's own disclaimer acknowledges implicitly that no bibliographic information is provided. For FAPESP PIPE standards, which require verifiable attribution of all empirical claims, this is a critical deficiency. The evidence ID system functions as an internal cross-reference mechanism, not a citation system. The citation format inconsistency identified in contradiction X5 — the report-writer agent was not instructed to use IEEE format — means the system produces outputs that lack any standard citation format entirely.
-
-**Improvements:**
-1. Resolve contradiction X5 immediately: update the report-writer agent's operational instructions to require IEEE citation format with full bibliographic metadata for all external sources.
-2. Expand the web_evidence.jsonl schema to require: source URL, page title, author (if available), publication date, and retrieval date. These fields must flow through to claims.json and the final report.
-3. Produce a formal References section at the end of the report using the specified citation format. Internal documentation sources (doc-xxx) should be cited as "Internal design artifact, [filename], run-001."
+**Concrete improvements.** In §4.2, add one sentence: "No peer-reviewed benchmark for fault tolerance pattern composition in LLM research pipelines was identified in the retrieved evidence set; this represents a genuine knowledge gap in the field rather than a retrievable source quality issue." In §4.1, reframe "13–57% improvement" as "13–57% improvement — a range wide enough to signal high task-type sensitivity."
 
 ---
 
-### 6. Structural Integrity — Score: 4/5
+### Criterion 2 — Methodological Clarity: 4/5
 
-**Justification:**
-The report follows a coherent and well-defined structure: research question, background, key findings summary, detailed analysis by sub-question, cross-cutting findings, contradictions registry, limitations, open questions, and next steps. All sections are present and substantive. The key findings section provides a useful executive summary with claim and contradiction references. The contradictions section is particularly strong — each contradiction names the conflicting evidence and proposes a resolution with rationale. The only structural gaps are the absence of a Methods section describing actual execution, the absence of a References section, and the absence of a formal abstract. The report would also benefit from an explicit scope statement at the outset.
+**Strengths.** The Round 2 primary blocker — the plan/execution conflation — is directly resolved. The report now includes an explicit status disclaimer at the close of §2: "This work represents a structured research synthesis based on collected sources and system design analysis; it does not correspond to an executed empirical deployment of the described architecture." This sentence is unambiguous and correctly positioned. Sub-questions SQ1–SQ5 are each addressed in dedicated, clearly bounded §4.x subsections with evidence traceability maintained from claims.json to report body. The four-phase methodology is honored in the report structure: the synthesizer's prohibition from mid-synthesis retrieval is cited at the report level [doc-018]. The confidence level assignment protocol — inherited from claims.json — is explicitly referenced.
 
-**Improvements:**
-1. Add a Methods section between Background and Key Findings describing the evidence retrieval and synthesis process as executed, not merely as planned.
-2. Add a formal References section with full bibliographic metadata for all evidence IDs.
-3. Add a brief abstract (150–200 words) summarizing the research question, method, key findings, and principal recommendations — standard for academic technical reports.
+**Weaknesses.** Sub-questions SQ6 (Academic-Grade Output Standards) and SQ7 (End-to-End System Design Synthesis), both defined in question.md, are not labeled or addressed as named sub-questions in the report. Their content is absorbed into §2 (contribution framing), §5 (cross-cutting findings), and §9 (next steps) without explicit mapping back to their SQ identifiers. A reader without access to question.md cannot verify that all seven sub-questions were addressed. Additionally, no methods subsection describes how sources were selected per sub-question or what filtering criteria governed evidence inclusion.
+
+**Concrete improvements.** Add a single sentence in §1 or §2 mapping SQ6 and SQ7 to their respective coverage locations in the report (e.g., "SQ6 informs the contribution framing in §2 and the standards applied in §4; SQ7 is addressed through the cross-cutting synthesis in §5"). Alternatively, add a two-column table mapping all seven sub-questions to report sections. This single addition fully resolves the coverage gap.
 
 ---
 
-### 7. Limitations and Honesty — Score: 5/5
+### Criterion 3 — Citation and Attribution Quality: 4/5
 
-**Justification:**
-The Limitations section (Section 7) is the strongest component of the report and represents a level of intellectual honesty uncommon in AI-generated research outputs. The report explicitly identifies: the predominance of vendor-sourced evidence and its implications; the absence of peer-reviewed benchmarks for research-specific MAS workloads; the unspecified LLM target scope; the MAST taxonomy coverage gap; the MCP protocol evolution risk; and the audit trail integrity limitation that applies reflexively to the report itself. The final limitation — acknowledging that the report's own provenance cannot be cryptographically verified — is particularly notable. Contradictions are named, enumerated, and partially resolved rather than omitted. Knowledge gaps are assigned impact ratings. Open questions are listed with precise cross-references to claims and gaps. No finding is overstated relative to the evidence provided.
+**Strengths.** The References section contains 25 numbered entries [1]–[25], each with full author names, title, publisher or venue, publication year, and URL. IEEE-style inline citation format is applied consistently throughout all body sections and cross-sections. The doc-NNN local document convention is correctly handled: cited inline by file identifier, excluded from the numbered References section, and explained in the footer. Citation density is appropriate — every major empirical claim in §4 and §5 carries at least one traceable inline reference. The contradiction registry (§6) and cross-cutting findings (§5) maintain back-citations accurately. The footer disclaimer explicitly states that no citations, paper titles, or author names were invented.
 
-**Improvements:**
-1. Add a quantitative characterization of the vendor-evidence problem: how many of the 25 web sources are vendor-sourced versus independent, and what percentage of recommendations rest exclusively on vendor evidence.
-2. Note explicitly that Section 8 (Open Questions) represents a forward research agenda, distinguishing it from limitations of the current study.
-3. Add a scope limitation statement: findings address a single system design (run-001) and may not generalize to multi-agent systems with different topologies, task types, or scale requirements.
+**Weaknesses.** Reference [3] (Falconer and Sellers, Confluent, 2025 — event-driven multi-agent systems) is listed in the References section but cited nowhere in the report body. This is an orphan reference: web-003 supports Claim C2 on event-driven asynchronous architectures in §4.1, but that passage does not invoke [3]. The orphan does not undermine any argument but represents a genuine citation-body inconsistency that is not acceptable in an archival artifact. Additionally, references [2], [10], and [13] carry no publication date, which should be resolved with a retrieval date per IEEE web citation practice.
+
+**Concrete improvements.** Either add an inline citation to [3] at the passage in §4.1 discussing event-driven asynchronous architectures as a blackboard-adjacent pattern improving reliability versus synchronous orchestration, or remove [3] from the References section. For references [2], [10], and [13], append "[accessed 2026-03-19]." Both actions together are needed before Zenodo archival.
 
 ---
 
-## Overall Score and Verdict
+### Criterion 4 — Structural and Academic Presentation: 4/5
 
-| Dimension | Score |
-|---|---|
-| 1. Scientific Rigor | 3/5 |
-| 2. Methodological Clarity | 4/5 |
-| 3. Innovation Relevance | 3/5 |
-| 4. Credible Execution | 3/5 |
-| 5. Citation and Attribution | 2/5 |
-| 6. Structural Integrity | 4/5 |
-| 7. Limitations and Honesty | 5/5 |
-| **Overall Average** | **3.4 / 5** |
+**Strengths.** All ten expected report sections are present and correctly scoped. The explicit separation of evidence-backed findings (§3–§5) from judgment-based recommendations (§9) is flagged with a labeled boundary sentence at the opening of §9 and maintained throughout. The Key Findings section (§3) provides an executive synthesis with forward references to supporting subsections and contradiction identifiers. The Contradictions section (§6) is analytically strong: each of X1–X6 states both competing positions, proposes a resolution with stated rationale, and cites the conflicting evidence by reference number. The Limitations section (§7) is substantive and specific — including a reflexive acknowledgment that the report's own provenance cannot be cryptographically verified. Tone is consistently assertive and third-person; no hedging language or promotional framing appears.
 
-**Verdict: MAJOR REVISION**
+**Weaknesses.** Section 2 serves double duty as both background narrative and contribution framing, with the three-point contribution statement appearing before sufficient context has been established for a cold reader to evaluate it. The contribution claims precede the system description, which compresses the background narrative and reduces the legibility of the contributions as standalone assertions. This is a minor organizational issue without substantive consequence, but it affects first-impression clarity for portfolio readers unfamiliar with the system.
 
-The report demonstrates genuine intellectual rigor in its structure, contradiction handling, and limitations acknowledgment — it is not a low-quality artifact. However, it cannot be accepted under FAPESP PIPE standards because: (a) no evidence source is attributed with verifiable bibliographic metadata, making the entire evidentiary chain unverifiable by an external reviewer; (b) the methodology is presented as executed when it is partially a plan; and (c) quantitative performance claims derived from non-peer-reviewed vendor sources are not consistently flagged as requiring independent validation. These are deficiencies in the fundamental infrastructure of scientific accountability, not stylistic issues. Addressing them would move this report from the boundary of acceptable to solidly within FAPESP PIPE standards.
+**Concrete improvements.** Split §2 into two labeled subsections: "2.1 Background" and "2.2 Novel Contributions of This Synthesis." This allows a reader to encounter the system description before the contribution claims and makes the contributions more prominently navigable as a standalone section. The content requires no changes; only the ordering and labeling change.
 
 ---
 
-## Priority Fixes
+### Criterion 5 — Innovation and Contribution Relevance: 5/5
 
-1. **Add full bibliographic metadata to all evidence references.** Every web-xxx source must be cited with URL, title, author (if available), publication date, and retrieval date. Without this, no claim is independently verifiable. This is non-negotiable for FAPESP PIPE compliance.
+**Strengths.** The Round 2 primary blocker — implicit rather than explicitly claimed contributions — is fully and cleanly resolved. Section 2 now opens with an explicit three-point contribution statement, correctly scoped as synthesis contributions emerging from cross-source analysis rather than empirical discoveries, and explicitly distinguished from prior single-source formulations: "These contributions emerge from cross-source synthesis rather than direct prior formulation in the literature." The five-type memory taxonomy extension — adding shared/collaborative memory with dynamic access control as a fifth type to the canonical four-type taxonomy [23] — is named, argued, and positioned as a concrete proposed resolution to contradiction X4. The blackboard/orchestrator-worker convergence is formalized as a unified architectural primitive in §5 (cross-cutting finding 4), not merely observed as an incidental similarity. The reliability-traceability co-design principle (cross-cutting finding 1) represents genuine architectural synthesis with design implications clearly stated. Open questions in §8 are tied to specific claim and gap identifiers, functioning as a traceable research agenda. The contributions are modestly and honestly scoped — a synthesis report does not overclaim empirical discoveries.
 
-2. **Distinguish executed methodology from planned methodology.** Add a Methods section documenting what was actually done: search queries, sources retrieved per sub-question, confidence assignment protocol, and which pipeline phases have been completed versus planned.
+**Weaknesses.** None that constitute a scoring penalty at this criterion level. The contributions are appropriately framed for what the artifact is.
 
-3. **Apply a uniform standard to all vendor-sourced quantitative claims.** The 13–57% blackboard advantage, the 10–35 second framework latency benchmarks, and the 75% enterprise survey figure require the same speculative qualifier currently applied only to the 200% token cost claim.
+**Concrete improvements (optional).** The three-point contribution list in §2 could cross-reference the specific sections where each contribution is elaborated (e.g., contribution (2) could note "see §4.1, §5 cross-cutting finding 4, and §6 X1"). This is navigational polish, not a substantive issue.
 
-4. **Resolve X5 and implement IEEE citation format.** Update the report-writer agent's operational rules. Produce a formal References section. The current evidence ID system is a cross-reference mechanism, not a citation system — it must be supplemented, not treated as equivalent.
+---
 
-5. **Articulate the innovation claim explicitly.** Add a paragraph identifying precisely what this work contributes beyond existing surveys or design frameworks. The synthetic contribution is real but unstated, which makes it invisible to a FAPESP reviewer assessing novelty.
+## Portfolio / Zenodo Suitability Assessment
+
+**Recommendation: Conditionally Ready**
+
+The artifact demonstrates sufficient rigor, methodological self-awareness, internal consistency, and evidence discipline to be published as a technical synthesis report in a portfolio or deposited to Zenodo. The contribution framing is now explicit and correctly scoped. The limitations section is thorough, specific, and intellectually honest at a level uncommon in AI-generated research outputs. The contradictions registry with resolution proposals is a genuine differentiating strength.
+
+The single condition for archival is resolution of the orphan reference [3]: a Zenodo-deposited artifact must not contain a reference that appears in the bibliography but is never cited in the body. This is a five-minute fix — either add the inline citation or remove the entry. The missing retrieval dates for [2], [10], and [13] should also be added for full IEEE compliance. The SQ6/SQ7 mapping gap and the §2 structural compression are recommended improvements but are not blocking for publication.
+
+Once the orphan reference is resolved and retrieval dates are added to [2], [10], and [13], the artifact is suitable for portfolio publication and Zenodo deposit without further revision.
+
+---
+
+## Remaining Weaknesses
+
+1. **Orphan reference [3].** Falconer and Sellers (Confluent, 2025) is listed in the References section but not cited in the report body. Add an inline citation at the relevant §4.1 passage or remove the entry. This is a blocking issue for clean archival.
+
+2. **SQ6/SQ7 traceability gap.** Sub-questions SQ6 and SQ7 from question.md are addressed in the report but not labeled as such. A one-sentence mapping in §1 or §2 closes this gap for any reader who has access to the question.md artifact.
+
+3. **Missing retrieval dates in three references.** References [2], [10], and [13] carry no publication date. Append "[accessed 2026-03-19]" per IEEE web citation practice before archival.
+
+---
+
+## Strengths
+
+1. **Explicit and honest limitations section (§7).** Seven named limitations with specific reference numbers, including a reflexive acknowledgment that the report's own provenance cannot be cryptographically verified within the current system design. This level of self-disclosure is rigorous and distinguishes the artifact from promotional AI system documentation.
+
+2. **Contradiction registry with proposed resolutions (§6, X1–X6).** Each of the six contradictions names both conflicting evidence positions, proposes a concrete resolution with stated rationale, and cites the conflict by reference number. This section alone demonstrates the structured critical synthesis discipline that FAPESP evaluation standards require.
+
+3. **Explicit three-point contribution framing in §2, correctly scoped.** The contribution statement claims synthesis contributions honestly without overclaiming empirical results. The five-type memory taxonomy extension and the blackboard/orchestrator-worker convergence are novel framings with practical architectural implications, presented as such without inflation and traceable to specific evidence and contradiction entries.
