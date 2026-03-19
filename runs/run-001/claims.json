@@ -1,0 +1,702 @@
+{
+  "research_question": "How should a multi-agent research system be architected to guarantee reliability, full traceability, and academic-grade outputs — covering agent role separation, orchestration patterns, MCP (Model Context Protocol) integration, and context window management?",
+  "synthesis_date": "2026-03-18",
+  "sub_questions": [
+    "SQ1 — Agent Role Separation and Orchestration Patterns",
+    "SQ2 — Reliability and Fault Tolerance",
+    "SQ3 — Traceability and Auditability",
+    "SQ4 — MCP Integration",
+    "SQ5 — Context Window Management"
+  ],
+  "claims": [
+    {
+      "claim_id": "C1",
+      "sub_questions": ["SQ1"],
+      "claim": "The orchestrator-worker hierarchical pattern is the dominant, production-validated architectural primitive for multi-agent research systems, supported by both academic literature and major framework implementations.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-001",
+          "source_type": "web",
+          "relevance": "Formalizes orchestration as a coherent layer covering planning, policy enforcement, state management, and quality operations as the architectural foundation for scalable multi-agent systems."
+        },
+        {
+          "evidence_id": "web-004",
+          "source_type": "web",
+          "relevance": "Google's ADK implements orchestrator-worker and hierarchical delegation as production-grade primitives with stateless and stateful worker variants."
+        },
+        {
+          "evidence_id": "doc-001",
+          "source_type": "doc",
+          "relevance": "The system under study is explicitly designed around a central orchestrator (research-architect) coordinating four specialist agents across four sequential phases."
+        },
+        {
+          "evidence_id": "doc-002",
+          "source_type": "doc",
+          "relevance": "The research-architect agent fulfills the orchestrator role: scoping questions, assigning sub-questions, sequencing phases, and managing the run directory."
+        }
+      ],
+      "contradictions": [],
+      "open_questions": [
+        "Does orchestrator-worker scale to 10+ concurrent specialist agents without introducing bottlenecks at the coordinator level?",
+        "At what agent count does hierarchical delegation produce coordination overhead that outweighs its reliability benefits?"
+      ]
+    },
+    {
+      "claim_id": "C2",
+      "sub_questions": ["SQ1"],
+      "claim": "Multiple distinct orchestration patterns — Orchestrator-Worker, Swarm, Mesh, Hierarchical, Pipeline, and Blackboard — each present different reliability and role-separation trade-offs; pattern selection is a first-order architectural decision with measurable cost implications.",
+      "confidence": "medium",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-002",
+          "source_type": "web",
+          "relevance": "Identifies five core patterns with distinct trade-offs; notes that wrong pattern selection can inflate token costs by 200% or more."
+        },
+        {
+          "evidence_id": "web-003",
+          "source_type": "web",
+          "relevance": "Event-driven asynchronous architectures (blackboard-adjacent) improve reliability and decoupling versus synchronous orchestration."
+        },
+        {
+          "evidence_id": "web-005",
+          "source_type": "web",
+          "relevance": "Blackboard architecture outperforms master-slave and RAG baselines by 13-57% in task success for multi-agent data discovery."
+        },
+        {
+          "evidence_id": "web-006",
+          "source_type": "web",
+          "relevance": "Blackboard enables agents to observe full peer reasoning context, reducing redundant computation and enabling consensus-driven outputs."
+        }
+      ],
+      "contradictions": [
+        {
+          "evidence_id": "web-002",
+          "description": "The 200% token cost increase claim lacks cited benchmarks; source is a developer blog, not peer-reviewed."
+        }
+      ],
+      "open_questions": [
+        "Which orchestration pattern best supports research-specific workflows requiring both exploratory retrieval and structured synthesis?",
+        "Can blackboard and orchestrator-worker patterns be hybridized for research pipelines without losing the auditability benefits of the pipeline pattern?"
+      ]
+    },
+    {
+      "claim_id": "C3",
+      "sub_questions": ["SQ1"],
+      "claim": "Strict role separation between retrieval, analysis, synthesis, and writing agents — formalized through agent descriptors and enforced by phase sequencing — is the primary mechanism by which this system achieves functional modularity.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "doc-003",
+          "source_type": "doc",
+          "relevance": "System enforces strict role separation: web-researcher handles retrieval, document-analyst handles extraction, synthesizer handles integration, report-writer handles output. No agent crosses into another's primary role."
+        },
+        {
+          "evidence_id": "doc-004",
+          "source_type": "doc",
+          "relevance": "SQ1-SQ5 are treated as independent and designed for parallel execution, requiring agent roles to be self-contained."
+        },
+        {
+          "evidence_id": "doc-005",
+          "source_type": "doc",
+          "relevance": "A formal evidence-type matrix documents primary vs. secondary responsibilities per agent per sub-question."
+        },
+        {
+          "evidence_id": "doc-018",
+          "source_type": "doc",
+          "relevance": "The synthesizer is explicitly prohibited from fetching new data, enforcing a strict phase boundary that prevents context contamination from mid-synthesis retrieval."
+        }
+      ],
+      "contradictions": [],
+      "open_questions": [
+        "No runtime enforcement mechanism (e.g., output schema validation) is documented to prevent role boundary violations — how should this be implemented?",
+        "No mechanism is specified for detecting if a sub-question is actually dependent on another's output before parallelization proceeds."
+      ]
+    },
+    {
+      "claim_id": "C4",
+      "sub_questions": ["SQ1"],
+      "claim": "Framework selection among LangGraph, CrewAI, and AutoGen is a consequential architectural decision that directly affects context management durability, coordination latency, and role-based workflow flexibility.",
+      "confidence": "medium",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-024",
+          "source_type": "web",
+          "relevance": "Benchmarks show LangGraph 25-35s, AutoGen 30-40s, CrewAI 45-60s for comparable 4-agent workflows; LangGraph is recommended for complex stateful research workflows."
+        }
+      ],
+      "contradictions": [
+        {
+          "evidence_id": "web-024",
+          "description": "Benchmarks derive from a single test scenario run by a vendor (Langfuse) that integrates commercially with all three frameworks; results may not generalize."
+        }
+      ],
+      "open_questions": [
+        "Which framework best supports the specific combination of phase-sequenced orchestration, per-agent file memory, and MCP tool integration required by this system?",
+        "Are the performance differences between frameworks significant at the scale of single research runs versus high-throughput production environments?"
+      ]
+    },
+    {
+      "claim_id": "C5",
+      "sub_questions": ["SQ2"],
+      "claim": "Multi-agent LLM systems exhibit at least 14 distinct failure modes across three categories — system design issues, inter-agent misalignment, and task verification failures — with state-of-the-art system correctness as low as 25% on challenging tasks.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-007",
+          "source_type": "web",
+          "relevance": "MAST taxonomy built from 1,600+ annotated traces across 7 frameworks; expert-validated with kappa=0.88 inter-annotator agreement."
+        }
+      ],
+      "contradictions": [
+        {
+          "evidence_id": "web-007",
+          "description": "Dataset covers open-source MAS frameworks only; proprietary enterprise systems may exhibit different failure distributions."
+        }
+      ],
+      "open_questions": [
+        "Which of the 14 MAST failure modes are most prevalent in research-specific pipelines as opposed to coding or math benchmarks?",
+        "Does adding a dedicated judge agent reduce failure rates across all three MAST categories or only in task verification?"
+      ]
+    },
+    {
+      "claim_id": "C6",
+      "sub_questions": ["SQ2"],
+      "claim": "Production-grade LLM agent reliability requires a layered fault-tolerance strategy composing retry policies, fallback routing, and circuit breakers — each addressing a distinct failure class; these patterns are complementary, not interchangeable.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-008",
+          "source_type": "web",
+          "relevance": "Retries handle transient errors; fallbacks route to cross-provider alternatives during outages; circuit breakers prevent retry storms that can amplify load by 10x."
+        },
+        {
+          "evidence_id": "web-010",
+          "source_type": "web",
+          "relevance": "Confirms that retry storms occur rapidly in multi-agent cascades; circuit breakers protect system stability during prolonged outages while retries handle temporary glitches."
+        },
+        {
+          "evidence_id": "doc-006",
+          "source_type": "doc",
+          "relevance": "The research plan explicitly targets retry logic, circuit breakers, agent health checks, and fallback routing as design patterns to investigate for SQ2."
+        }
+      ],
+      "contradictions": [
+        {
+          "evidence_id": "web-008",
+          "description": "Written by Portkey (an AI gateway vendor); recommendations align with their product offerings rather than independent evaluation."
+        },
+        {
+          "evidence_id": "web-010",
+          "description": "Developer blog; empirical claims about cascade failure rates lack supporting benchmark data."
+        }
+      ],
+      "open_questions": [
+        "What specific retry and circuit-breaker thresholds are appropriate for research agent workflows where latency is less critical than correctness?",
+        "How should agent health checks be implemented for LLM-based agents, which may fail silently with plausible-seeming incorrect outputs?"
+      ]
+    },
+    {
+      "claim_id": "C7",
+      "sub_questions": ["SQ2"],
+      "claim": "Error classification — distinguishing transient, LLM-recoverable, and human-required error types — and routing each to the correct handler is the highest-impact single reliability improvement for multi-agent systems.",
+      "confidence": "medium",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-009",
+          "source_type": "web",
+          "relevance": "Recommends judge agents for critical outputs with explicit thresholds and retry limits; flags poor stop conditions and indefinite retry loops as leading silent failure causes."
+        },
+        {
+          "evidence_id": "doc-007",
+          "source_type": "doc",
+          "relevance": "The research plan acknowledges SQ1 and SQ2 overlap, noting that fault tolerance in orchestration is partly an orchestration design concern."
+        }
+      ],
+      "contradictions": [
+        {
+          "evidence_id": "web-009",
+          "description": "Published by an observability vendor (Maxim); no independent benchmark data cited for reliability improvement claims."
+        }
+      ],
+      "open_questions": [
+        "What constitutes a recoverable error for LLM agents specifically, where the model's own output is the error source?",
+        "Should judge agents be permanent pipeline components or activated only on low-confidence outputs?"
+      ]
+    },
+    {
+      "claim_id": "C8",
+      "sub_questions": ["SQ2"],
+      "claim": "The system's current design includes an FAPESP-review feedback loop suggesting intent for iterative quality improvement, but the loop lacks defined exit criteria — creating a reliability gap in the pipeline design.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "doc-024",
+          "source_type": "doc",
+          "relevance": "MULTI_AGENT_PLAN.md includes phases for FAPESP review and revision but specifies 'Revise if needed' without defining revision criteria or maximum revision cycles."
+        },
+        {
+          "evidence_id": "doc-021",
+          "source_type": "doc",
+          "relevance": "Open questions in the plan include unresolved sequencing between fapesp-reviewer and the first full draft — a genuine architectural ambiguity affecting pipeline reliability."
+        }
+      ],
+      "contradictions": [],
+      "open_questions": [
+        "What threshold on the FAPESP review score should trigger mandatory revision versus optional revision?",
+        "Should the FAPESP reviewer run before or after the first full report draft, and does the order materially affect output quality?"
+      ]
+    },
+    {
+      "claim_id": "C9",
+      "sub_questions": ["SQ3"],
+      "claim": "A minimum viable audit log for agentic AI must capture initiating actor, timestamp, full prompt, knowledge sources with specific document references, response generated, and all tool calls executed — without this, traceability requirements cannot be satisfied.",
+      "confidence": "medium",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-011",
+          "source_type": "web",
+          "relevance": "Specifies six minimum fields for agentic AI audit logging and argues guardrails alone are insufficient without complete retrievable action logs."
+        },
+        {
+          "evidence_id": "web-012",
+          "source_type": "web",
+          "relevance": "75% of enterprise leaders rank auditability as a crucial agent deployment requirement; ISACA notes unprecedented auditing challenges from partial observability."
+        },
+        {
+          "evidence_id": "doc-008",
+          "source_type": "doc",
+          "relevance": "Full traceability from raw source to final output is stated as a core design requirement, covering source attribution, reasoning chains, and inter-agent handoffs."
+        },
+        {
+          "evidence_id": "doc-011",
+          "source_type": "doc",
+          "relevance": "Each evidence item must be tagged with source reference, sub-question, and confidence level — establishing a minimum traceability schema."
+        }
+      ],
+      "contradictions": [
+        {
+          "evidence_id": "web-011",
+          "description": "Opinion piece; not peer-reviewed. The six-field minimum may be insufficient for regulated environments requiring cryptographic non-repudiation."
+        },
+        {
+          "evidence_id": "web-012",
+          "description": "Survey figure (75%) lacks disclosed sample size and industry breakdown."
+        }
+      ],
+      "open_questions": [
+        "How should reasoning chain logs be stored and queried at scale without overwhelming storage infrastructure?",
+        "Is the JSONL evidence format as currently implemented sufficient for the auditability requirements, or does it need additional fields?"
+      ]
+    },
+    {
+      "claim_id": "C10",
+      "sub_questions": ["SQ3"],
+      "claim": "Multi-agent governance requires layered validation — unit-level agent behavior testing, integration-level handoff correctness, and system-level decision provenance — spanning the full pipeline from raw source to final output.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-013",
+          "source_type": "web",
+          "relevance": "PwC framework specifies three-layer validation: unit, integration, and system-level auditability covering full decision provenance chains."
+        },
+        {
+          "evidence_id": "web-014",
+          "source_type": "web",
+          "relevance": "Agentic RAG enables real-time citation and traceability through provenance-aware pipelines that expose uncertainty alongside evidence."
+        },
+        {
+          "evidence_id": "doc-010",
+          "source_type": "doc",
+          "relevance": "The system's artifact pipeline (question.md to web_evidence.jsonl to doc_evidence.jsonl to claims.json to report.md to fapesp_review.md to improvement_plan.md) constitutes a de-facto audit trail preserving intermediate outputs at each stage."
+        }
+      ],
+      "contradictions": [
+        {
+          "evidence_id": "web-013",
+          "description": "PwC is a consulting firm with commercial interest in governance engagements; framework may be over-engineered for smaller research systems."
+        },
+        {
+          "evidence_id": "doc-010",
+          "description": "No hash/checksum or immutability mechanism is specified for pipeline artifacts — files could be modified post-creation without detection, undermining audit trail integrity."
+        }
+      ],
+      "open_questions": [
+        "Should intermediate artifact files (JSONL, claims.json) be cryptographically signed or checksummed to enforce immutability?",
+        "What integration-level test harness is needed to verify correct evidence handoff between web-researcher, document-analyst, and synthesizer?"
+      ]
+    },
+    {
+      "claim_id": "C11",
+      "sub_questions": ["SQ3"],
+      "claim": "Traceability standards for multi-agent AI systems are not yet standardized — this remains a frontier area where ad hoc schema design (such as the JSONL evidence format in this system) currently substitutes for established conventions.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "doc-009",
+          "source_type": "doc",
+          "relevance": "The research plan explicitly flags that traceability standards for multi-agent AI are not yet standardized, making this a frontier research area."
+        },
+        {
+          "evidence_id": "doc-022",
+          "source_type": "doc",
+          "relevance": "The document-analyst is prohibited from treating draft notes as confirmed facts without signaling uncertainty — a policy substitute for a formal confidence standard."
+        },
+        {
+          "evidence_id": "doc-023",
+          "source_type": "doc",
+          "relevance": "Phase 3 synthesis is designed to resolve conflicts across sub-questions, but no formal conflict-resolution protocol is documented — resolution is left to the synthesizer's discretion."
+        }
+      ],
+      "contradictions": [],
+      "open_questions": [
+        "Are there emerging standards (W3C PROV, OpenLineage, or similar) that could be adapted to multi-agent AI traceability?",
+        "Should the system adopt an existing provenance vocabulary or develop a domain-specific schema?"
+      ]
+    },
+    {
+      "claim_id": "C12",
+      "sub_questions": ["SQ4"],
+      "claim": "MCP is an open, standardized protocol that replaces fragmented bespoke tool integrations with a universal client-server architecture; it enables any MCP-compatible AI to connect to any MCP server, and a single AI can connect to any number of servers simultaneously.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-015",
+          "source_type": "web",
+          "relevance": "Anthropic's announcement establishes MCP as a universal standard; a single MCP server works with any compatible AI and a single AI connects to any number of servers."
+        },
+        {
+          "evidence_id": "web-016",
+          "source_type": "web",
+          "relevance": "The official spec v2025-11-25 defines host/client/server roles, lifecycle, transport options (stdio + HTTP+SSE), authorization, and feature layers."
+        },
+        {
+          "evidence_id": "doc-012",
+          "source_type": "doc",
+          "relevance": "MCP is explicitly designated as the primary tool-integration protocol for the system, superseding function calling alone."
+        }
+      ],
+      "contradictions": [
+        {
+          "evidence_id": "web-015",
+          "description": "Source is Anthropic's own announcement; independent reliability evaluation and third-party adoption data are needed."
+        }
+      ],
+      "open_questions": [
+        "What is the current state of MCP adoption beyond Anthropic's own Claude ecosystem?",
+        "How does MCP handle authentication and authorization for sensitive research data sources?"
+      ]
+    },
+    {
+      "claim_id": "C13",
+      "sub_questions": ["SQ4"],
+      "claim": "MCP and A2A are complementary protocols operating at different architectural levels: MCP governs agent-to-tool communication while A2A governs peer-to-peer agent task delegation; a complete multi-agent system benefits from both simultaneously.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-018",
+          "source_type": "web",
+          "relevance": "Survey identifies MCP and A2A as operating at different levels; an agent system can use both simultaneously."
+        },
+        {
+          "evidence_id": "web-019",
+          "source_type": "web",
+          "relevance": "Google explicitly states A2A is complementary to MCP; A2A launched April 2025 with 50+ technology partners; MCP donated to Linux Foundation December 2025."
+        },
+        {
+          "evidence_id": "web-017",
+          "source_type": "web",
+          "relevance": "MCP uses JSON-RPC 2.0 as its protocol layer; on-demand tool loading improves context efficiency by keeping irrelevant tool schemas out of the model's context window."
+        }
+      ],
+      "contradictions": [
+        {
+          "evidence_id": "web-018",
+          "description": "Protocol ecosystem is evolving rapidly; survey coverage may lag latest spec revisions as of early 2026."
+        }
+      ],
+      "open_questions": [
+        "Should this system implement A2A for inter-agent communication or rely on the existing file-based artifact handoff pattern?",
+        "How do MCP and A2A interact when the same agent needs to both consume tools and delegate sub-tasks to peers?"
+      ]
+    },
+    {
+      "claim_id": "C14",
+      "sub_questions": ["SQ4"],
+      "claim": "MCP's rapid evolution is a concrete integration risk: documentation as of early 2026 may already be outdated relative to implementation, and no versioning or protocol-drift monitoring strategy is documented in the system.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "doc-013",
+          "source_type": "doc",
+          "relevance": "The research plan explicitly identifies MCP's evolution pace as a reliability and integration risk."
+        },
+        {
+          "evidence_id": "doc-014",
+          "source_type": "doc",
+          "relevance": "All MCP knowledge must come from external retrieval; the repo contains no internal MCP notes, configuration, or integration artifacts."
+        }
+      ],
+      "contradictions": [],
+      "open_questions": [
+        "What versioning discipline (pinning MCP SDK versions, changelog monitoring) should be adopted to manage protocol drift?",
+        "Does Linux Foundation stewardship of MCP (as of December 2025) introduce governance stability that mitigates the drift risk?"
+      ]
+    },
+    {
+      "claim_id": "C15",
+      "sub_questions": ["SQ5"],
+      "claim": "Virtual context management — dynamically moving information between in-context memory and external archival storage via agent-initiated tool calls — is a viable architecture for maintaining coherent long-running research tasks beyond single context window limits.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-020",
+          "source_type": "web",
+          "relevance": "MemGPT's two-tier architecture (in-context main memory + out-of-context recall/archival storage) enables agents to self-edit their context; evaluated on document analysis exceeding context limits."
+        },
+        {
+          "evidence_id": "web-023",
+          "source_type": "web",
+          "relevance": "Canonical agent architecture taxonomy: long-term memory leverages external vector stores with fast retrieval; tool use enables read/write access beyond the context window."
+        },
+        {
+          "evidence_id": "doc-017",
+          "source_type": "doc",
+          "relevance": "Each agent has a dedicated file-based persistent memory directory, providing an external memory mechanism that survives conversation context resets — a concrete implementation of per-agent external memory."
+        }
+      ],
+      "contradictions": [
+        {
+          "evidence_id": "web-020",
+          "description": "MemGPT's heuristic-based scoring functions lack principled mechanisms for preventing hallucinated content in memory retrieval."
+        }
+      ],
+      "open_questions": [
+        "How should the system decide what to move from in-context to archival storage during a long research run — what eviction policy is most appropriate for research workloads?",
+        "No mechanism is documented for cross-agent memory access or shared state beyond the artifact files — should shared vector memory be introduced?"
+      ]
+    },
+    {
+      "claim_id": "C16",
+      "sub_questions": ["SQ5"],
+      "claim": "Production context window management requires a multi-strategy approach combining selective context injection, compression/summarization, RAG-based retrieval, and sliding window pruning — no single strategy is sufficient for long research runs.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-021",
+          "source_type": "web",
+          "relevance": "Context windows range from 8K to 200K tokens; token budget exhaustion is a primary failure mode in multi-turn agent workflows; multiple strategies must be combined."
+        },
+        {
+          "evidence_id": "web-022",
+          "source_type": "web",
+          "relevance": "Fixed-size context windows cause perspective inconsistency and forgetting; heterogeneous multi-agent systems require structured memory differentiating agent roles and access patterns."
+        },
+        {
+          "evidence_id": "doc-015",
+          "source_type": "doc",
+          "relevance": "The research plan targets RAG, compression, external memory, and handoff protocols as primary context management strategies."
+        }
+      ],
+      "contradictions": [
+        {
+          "evidence_id": "web-021",
+          "description": "Published by an observability vendor; strategies are described but not benchmarked against each other — comparative effectiveness is unknown."
+        }
+      ],
+      "open_questions": [
+        "Which combination of strategies performs best for the specific workload of multi-step evidence retrieval and synthesis?",
+        "At what document count or research depth does context window exhaustion become a bottleneck in this system's pipeline?"
+      ]
+    },
+    {
+      "claim_id": "C17",
+      "sub_questions": ["SQ5"],
+      "claim": "Context management strategies vary significantly by LLM provider and model, and findings from research on one provider's context handling may not generalize; the system's LLM scope must be defined before context strategy recommendations can be applied.",
+      "confidence": "high",
+      "supporting_evidence": [
+        {
+          "evidence_id": "doc-016",
+          "source_type": "doc",
+          "relevance": "The research plan explicitly acknowledges that context management strategies vary widely by model and findings may not generalize across LLM providers."
+        },
+        {
+          "evidence_id": "web-023",
+          "source_type": "web",
+          "relevance": "Published 2023; some implementation details have been superseded by newer frameworks, illustrating how rapidly the context management landscape shifts."
+        }
+      ],
+      "contradictions": [],
+      "open_questions": [
+        "Which LLM provider(s) and model versions are in scope for this system's production deployment?",
+        "Does the choice of Claude (Anthropic) as the primary LLM constrain which external memory and RAG patterns are natively supported?"
+      ]
+    },
+    {
+      "claim_id": "C18",
+      "sub_questions": ["SQ5"],
+      "claim": "Shared memory architectures for multi-agent systems must include dynamic access control to maintain collaborative knowledge sharing while preserving inter-agent audit traceability — uncontrolled shared memory degrades both coherence and accountability.",
+      "confidence": "medium",
+      "supporting_evidence": [
+        {
+          "evidence_id": "web-025",
+          "source_type": "web",
+          "relevance": "Memory with dynamic access control allows agents to recall prior subtasks, coordinate handoffs, maintain role histories, share knowledge, and build on earlier steps while preserving traceability."
+        },
+        {
+          "evidence_id": "web-022",
+          "source_type": "web",
+          "relevance": "Heterogeneous multi-agent systems require structured contextual memory differentiating agent roles and memory access patterns to prevent perspective inconsistency."
+        }
+      ],
+      "contradictions": [
+        {
+          "evidence_id": "web-025",
+          "description": "Preprint; not yet peer-reviewed at retrieval date — specific access control claims await independent validation."
+        }
+      ],
+      "open_questions": [
+        "Should the current file-based per-agent memory be extended to a shared memory store with access control, or kept isolated to preserve role separation?",
+        "How should memory access control be implemented without introducing a new coordination bottleneck?"
+      ]
+    }
+  ],
+  "cross_cutting_findings": [
+    {
+      "finding": "Reliability and traceability are architecturally intertwined: the same audit logging that enables post-hoc traceability also enables real-time fault detection and recovery routing. Systems designed without integrated logging sacrifice both properties simultaneously.",
+      "sub_questions": ["SQ2", "SQ3"],
+      "evidence_ids": ["web-007", "web-011", "web-013", "doc-010", "doc-011"]
+    },
+    {
+      "finding": "MCP integration and context window management are mutually reinforcing: MCP's on-demand tool loading filters irrelevant tool schemas from the context, making context-efficient tool registration a design requirement, not merely an optimization.",
+      "sub_questions": ["SQ4", "SQ5"],
+      "evidence_ids": ["web-017", "web-021", "doc-012", "doc-015"]
+    },
+    {
+      "finding": "Role separation (SQ1) and traceability (SQ3) are co-dependent: strict agent role boundaries create natural traceability checkpoints at handoff stages, while lack of enforced boundaries makes it impossible to attribute errors or outputs to specific agents in an audit.",
+      "sub_questions": ["SQ1", "SQ3"],
+      "evidence_ids": ["doc-003", "doc-010", "doc-019", "web-013"]
+    },
+    {
+      "finding": "The blackboard architecture pattern (SQ1) and shared memory with access control (SQ5) converge on the same design — a common information space with controlled read/write semantics — and should be treated as a single architectural concern rather than separate decisions.",
+      "sub_questions": ["SQ1", "SQ5"],
+      "evidence_ids": ["web-005", "web-006", "web-025", "web-022"]
+    },
+    {
+      "finding": "Agent-specific file-based persistent memory addresses SQ5 (external memory surviving context resets) and SQ3 (per-agent audit records) simultaneously, but the current design lacks cross-agent memory access or shared state, limiting coordination effectiveness.",
+      "sub_questions": ["SQ3", "SQ5"],
+      "evidence_ids": ["doc-017", "web-025", "doc-008"]
+    },
+    {
+      "finding": "Orchestration pattern choice (SQ1), fault tolerance design (SQ2), and framework selection are tightly coupled: the LangGraph/CrewAI/AutoGen choice determines available fault tolerance primitives, context management features, and the feasibility of certain orchestration topologies.",
+      "sub_questions": ["SQ1", "SQ2", "SQ5"],
+      "evidence_ids": ["web-024", "web-008", "web-010", "doc-021"]
+    }
+  ],
+  "knowledge_gaps": [
+    {
+      "gap_id": "G1",
+      "sub_question": "SQ2",
+      "description": "No benchmark data exists comparing the effectiveness of different fault-tolerance pattern compositions (retry + fallback + circuit breaker combinations) specifically for LLM research agent workloads, as opposed to high-throughput API gateway workloads. All available evidence comes from vendors with commercial interests in specific implementations.",
+      "impact": "high"
+    },
+    {
+      "gap_id": "G2",
+      "sub_question": "SQ3",
+      "description": "No established standard (W3C PROV, OpenLineage, or purpose-built) has been adopted or evaluated for multi-agent AI provenance tracking. The current JSONL schema is an ad hoc design with no immutability guarantees, no cryptographic verification, and no interoperability with external audit tooling.",
+      "impact": "high"
+    },
+    {
+      "gap_id": "G3",
+      "sub_question": "SQ4",
+      "description": "No documentation exists in the repository for how MCP servers are configured, versioned, or monitored in this system. All MCP knowledge is derived from external sources, and no internal implementation artifacts (MCP server configs, tool registration files, SDK version pins) are present.",
+      "impact": "high"
+    },
+    {
+      "gap_id": "G4",
+      "sub_question": "SQ5",
+      "description": "The system does not specify which LLM provider and model version are in scope, making it impossible to determine which context management strategies are natively supported versus requiring custom implementation. Context limits, compression APIs, and retrieval integrations all vary significantly by provider.",
+      "impact": "high"
+    },
+    {
+      "gap_id": "G5",
+      "sub_question": "SQ2",
+      "description": "No runtime enforcement mechanism is documented to detect silent agent failures — cases where an LLM agent produces plausible-looking but incorrect output without triggering any error signal. Judge agent design for research workloads is undefined.",
+      "impact": "high"
+    },
+    {
+      "gap_id": "G6",
+      "sub_question": "SQ1",
+      "description": "No mechanism is specified for detecting actual inter-sub-question dependencies before parallelizing SQ1-SQ5. The assumption that these are fully independent may be incorrect — SQ3 (traceability) and SQ5 (context management) share design concerns that could create ordering constraints.",
+      "impact": "medium"
+    },
+    {
+      "gap_id": "G7",
+      "sub_question": "SQ3",
+      "description": "The FAPESP review feedback loop has no defined exit criteria, revision threshold, or maximum iteration count. This creates an unbounded loop risk and undermines audit trail completeness — it is unclear which version of a report constitutes the final auditable output.",
+      "impact": "medium"
+    },
+    {
+      "gap_id": "G8",
+      "sub_question": "SQ4",
+      "description": "The relationship between A2A (Google's Agent-to-Agent protocol, April 2025) and the current system's file-based inter-agent handoff has not been evaluated. It is unknown whether adopting A2A would improve or complicate the existing orchestration design.",
+      "impact": "medium"
+    },
+    {
+      "gap_id": "G9",
+      "sub_question": "SQ5",
+      "description": "No comparative benchmark exists in the evidence set for context management strategies under research-specific workloads (multi-step evidence retrieval and synthesis). Available benchmarks cover coding, math, or conversational tasks — not academic research workflows.",
+      "impact": "medium"
+    },
+    {
+      "gap_id": "G10",
+      "sub_question": "SQ1",
+      "description": "No runtime schema validation or output contract enforcement is documented to prevent agents from violating their role boundaries. Role separation is currently enforced only through system prompt instructions, which are not mechanically binding.",
+      "impact": "medium"
+    }
+  ],
+  "contradictions_registry": [
+    {
+      "conflict_id": "X1",
+      "description": "Web evidence demonstrates that blackboard architecture outperforms master-slave and pipeline patterns by 13-57% for multi-agent data discovery, yet the system under study implements an orchestrator-worker hierarchical pattern — the web evidence suggests the chosen architecture may be suboptimal for research tasks.",
+      "evidence_a": "web-005",
+      "evidence_b": "doc-001",
+      "resolution": "The blackboard advantage was demonstrated on data science discovery tasks, not research pipeline workflows. The orchestrator-worker pattern offers stronger role isolation and auditability benefits. A hybrid approach should be evaluated: orchestrator-worker for phase coordination with blackboard-style shared artifact files for within-phase agent communication."
+    },
+    {
+      "conflict_id": "X2",
+      "description": "Web evidence recommends circuit breakers as essential for production reliability, but the system design documents contain no implementation of any fault-tolerance pattern — creating a gap between the recommended architecture and the actual implemented design.",
+      "evidence_a": "web-008",
+      "evidence_b": "doc-006",
+      "resolution": "The research plan acknowledges this as a target for investigation rather than an existing implementation. The gap is real: the system as currently designed lacks the layered fault-tolerance strategy the web evidence identifies as essential. This must be addressed before production deployment."
+    },
+    {
+      "conflict_id": "X3",
+      "description": "The artifact pipeline is described as a de-facto audit trail, but lacks any immutability mechanism — files can be modified post-creation. Web evidence requires audit trails to be complete and retrievable, which is incompatible with mutable artifact files.",
+      "evidence_a": "web-013",
+      "evidence_b": "doc-010",
+      "resolution": "The current artifact pipeline provides a structural audit trail (correct sequencing of outputs) but not a cryptographic one. Checksumming or git-based immutability (committing each artifact immediately after creation) would close this gap without requiring additional infrastructure."
+    },
+    {
+      "conflict_id": "X4",
+      "description": "The canonical four-type agent memory taxonomy (sensory, short-term, long-term, episodic) was developed for single-agent systems and does not account for inter-agent memory access control — a requirement that emerges only in multi-agent settings and is documented in newer evidence.",
+      "evidence_a": "web-023",
+      "evidence_b": "web-022",
+      "resolution": "The 2023 taxonomy should be extended with a fifth type: shared/collaborative memory with access control, as described in web-025. The older taxonomy remains valid for intra-agent memory design but is insufficient as a complete reference for multi-agent systems."
+    },
+    {
+      "conflict_id": "X5",
+      "description": "The report-writer agent rules do not explicitly specify IEEE citation format, while MULTI_AGENT_PLAN.md recommends IEEE for technical systems research — creating a potential inconsistency between the plan's output standard and the agent's operational instructions.",
+      "evidence_a": "doc-019",
+      "evidence_b": "doc-010",
+      "resolution": "Update the report-writer system prompt to explicitly specify IEEE citation format consistent with the plan's recommendation. Until this inconsistency is resolved, the report-writer may default to a different citation style, undermining academic-grade output standards."
+    },
+    {
+      "conflict_id": "X6",
+      "description": "A developer blog claims wrong orchestration pattern selection can inflate token costs by 200%, while an independent benchmark shows framework performance differences of only 10-35 seconds for comparable workflows — the magnitude of the cost impact is unresolved.",
+      "evidence_a": "web-002",
+      "evidence_b": "web-024",
+      "resolution": "The 200% cost increase claim should be treated as speculative. The web-024 benchmarks provide more credible quantitative comparisons, though also from a vendor source. Pattern selection cost implications require independent empirical validation before being cited as established fact."
+    }
+  ]
+}
